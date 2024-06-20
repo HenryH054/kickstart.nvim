@@ -96,6 +96,9 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- Filetree binding
 vim.keymap.set('n', '<leader>F', [[:Neotree<CR>]], { desc = 'Open filetree' })
 
+-- MD Preview
+vim.keymap.set('n', '<leader>md', [[:MarkdownPreviewToggle<CR>]], { desc = 'Open Markdown preview' })
+
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -208,6 +211,15 @@ require('lazy').setup({
       require('which-key').register({
         ['<leader>h'] = { 'Git [H]unk' },
       }, { mode = 'v' })
+    end,
+  },
+
+  { --Markdown preview plugin
+    'iamcco/markdown-preview.nvim',
+    cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+    ft = { 'markdown' },
+    build = function()
+      vim.fn['mkdp#util#install']()
     end,
   },
 
@@ -340,28 +352,6 @@ require('lazy').setup({
       { 'folke/neodev.nvim', opts = {} },
     },
     config = function()
-      -- Brief aside: **What is LSP?**
-      --
-      -- LSP is an initialism you've probably heard, but might not understand what it is.
-      --
-      -- LSP stands for Language Server Protocol. It's a protocol that helps editors
-      -- and language tooling communicate in a standardized fashion.
-      --
-      -- In general, you have a "server" which is some tool built to understand a particular
-      -- language (such as `gopls`, `lua_ls`, `rust_analyzer`, etc.). These Language Servers
-      -- (sometimes called LSP servers, but that's kind of like ATM Machine) are standalone
-      -- processes that communicate with some "client" - in this case, Neovim!
-      --
-      -- LSP provides Neovim with features like:
-      --  - Go to definition
-      --  - Find references
-      --  - Autocompletion
-      --  - Symbol Search
-      --  - and more!
-      --
-      -- Thus, Language Servers are external tools that must be installed separately from
-      -- Neovim. This is where `mason` and related plugins come into play.
-      --
       -- If you're wondering about lsp vs treesitter, you can check out the wonderfully
       -- and elegantly composed help section, `:help lsp-vs-treesitter`
 
@@ -497,7 +487,15 @@ require('lazy').setup({
         jdtls = {},
         pylsp = {},
         clangd = {},
-        arduino_language_server = {},
+        arduino_language_server = {
+          cmd = {
+            'arduino-language-server',
+            '-cli-config',
+            '$HOME/.arduino15/arduino-cli.yaml',
+            '-fqbn',
+            'esp32:esp32:sparkfun_esp32_iot_redboard',
+          },
+        },
         tsserver = {},
         html = { filetypes = { 'html', 'twig', 'hbs' } },
         cssls = {},
