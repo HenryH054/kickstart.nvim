@@ -485,6 +485,7 @@ require('lazy').setup({
         },
         tsserver = {},
         html = { filetypes = { 'html', 'twig', 'hbs' } },
+        csharp_ls = {},
         cssls = {},
         lua_ls = {
           -- cmd = {...},
