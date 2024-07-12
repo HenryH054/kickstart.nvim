@@ -93,7 +93,7 @@ vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagn
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Filetree binding
-vim.keymap.set('n', '<leader>F', [[:Neotree<CR>]], { desc = 'Open filetree' })
+vim.keymap.set('n', '<leader>F', [[:Neotree toggle<CR>]], { desc = 'Open filetree' })
 
 -- MD Preview
 vim.keymap.set('n', '<leader>md', [[:MarkdownPreviewToggle<CR>]], { desc = 'Open Markdown preview' })
@@ -470,22 +470,30 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
 
-        gopls = {},
-        jdtls = {},
-        pylsp = {},
-        clangd = {},
         arduino_language_server = {
           cmd = {
             'arduino-language-server',
-            '-cli-config',
+            '-clangd',
+            '/bin/clangd',
+            '-cli',
+            '/usr/local/bin/arduino-cli',
+            'cli-config',
             '$HOME/.arduino15/arduino-cli.yaml',
             '-fqbn',
             'esp32:esp32:sparkfun_esp32_iot_redboard',
           },
         },
+        gopls = {},
+        jdtls = {},
+        pylsp = {},
+        clangd = {},
         tsserver = {},
         html = { filetypes = { 'html', 'twig', 'hbs' } },
-        csharp_ls = {},
+        omnisharp = {
+          root_dir = function()
+            return vim.loop.cwd() -- current working directory
+          end,
+        },
         cssls = {},
         lua_ls = {
           -- cmd = {...},
@@ -523,9 +531,6 @@ require('lazy').setup({
         handlers = {
           function(server_name)
             local server = servers[server_name] or {}
-            -- This handles overriding only values explicitly passed
-            -- by the server configuration above. Useful when disabling
-            -- certain features of an LSP (for example, turning off formatting for tsserver)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
